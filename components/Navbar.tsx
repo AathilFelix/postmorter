@@ -61,7 +61,7 @@ const Navbar = () => {
                 <BreadcrumbList>
                 <BreadcrumbSeparator className="flex items-center justify-center"><Dot size={24} strokeWidth={8} className="text-black"/></BreadcrumbSeparator>
                 <BreadcrumbItem>
-                    <BreadcrumbPage className="text-lg lg:text-xl font-medium text-black">Incident Overview</BreadcrumbPage>
+                    <BreadcrumbPage className="text-lg lg:text-xl font-medium text-black">Inc 042</BreadcrumbPage>
                 </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
