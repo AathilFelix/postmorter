@@ -48,7 +48,7 @@ const KpiGrid = ({heading, metric, change ,bottom, badgeType = 'none'}: KpiProp)
       <div className="flex flex-col">
         <h3 className="text-muted-foreground">{heading}</h3>
         <div className="flex flex-row items-end">
-          <span className="text-5xl font-extrabold">{metric}</span>
+          <span className="text-4xl font-extrabold">{metric}</span>
           {renderBadge()}
         </div>
         <p className="text-muted-foreground text-sm">{bottom}</p>

@@ -53,7 +53,7 @@ const Navbar = () => {
                 </clipPath>
               </defs>
             </svg>
-            <span className="text-lg lg:text-xl font-medium text-black">
+            <span className="text-lg lg:text-[16px] font-medium text-black">
               Postmortor
             </span>
             
@@ -61,7 +61,7 @@ const Navbar = () => {
                 <BreadcrumbList>
                 <BreadcrumbSeparator className="flex items-center justify-center"><Dot size={24} strokeWidth={8} className="text-black"/></BreadcrumbSeparator>
                 <BreadcrumbItem>
-                    <BreadcrumbPage className="text-lg lg:text-xl font-medium text-black">Inc 042</BreadcrumbPage>
+                    <BreadcrumbPage className="text-lg lg:text-[16px] font-medium text-black">Inc 042</BreadcrumbPage>
                 </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
