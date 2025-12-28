@@ -131,7 +131,7 @@ const IncidentBody = () => {
           />
         </section>
         <section className="border-t border-[#00000033]"></section>
-        <section className="flex flex-col gap-[20px]">
+        <section className="flex flex-col gap-5">
           <h1 className="text-xl font-semibold">Action items</h1>
           {ActionItems.map((action) => (
             <ActionItem
