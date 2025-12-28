@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Postmorter",
+  title: "Postmortor",
   description: "A AI application for analysis of outages",
 };
 
