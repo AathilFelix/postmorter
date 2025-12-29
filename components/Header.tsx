@@ -35,17 +35,22 @@ const kpiData = [
   },
 ];
 
-const Header = () => {
+interface HeaderProps {
+  id: string;
+  incident: string;
+}
+
+const Header = ({ id, incident }: HeaderProps) => {
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="flex flex-row items-center gap-2">
         <Badge
           variant="outline"
           className="rounded-sm px-3 py-1 text-sm font-medium">
-          Inc 042
+          Inc {id}
         </Badge>
         <Badge className="rounded-sm px-3 py-1 text-sm font-medium bg-purple-100 text-[#564787] hover:bg-purple-100">
-          Latency spike
+          {incident}
         </Badge>
       </div>
 

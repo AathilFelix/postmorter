@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { Button } from './button'
 
@@ -5,19 +7,20 @@ interface ButtonType {
   variant ?: string | "default";
   icon ?: React.ReactNode;
   text ?: string;
+  onClick ?: () => void;
 }
 
-const GenerateButton = ({variant, icon, text}: ButtonType)  => {
+const GenerateButton = ({variant, icon, text, onClick}: ButtonType)  => {
   const isWhiteBg = variant === "whitebg";
   const buttonClass = isWhiteBg
     ? "bg-white border-2 border-[#564787] text-[#564787] rounded-[10px] items-center hover:bg-white hover:cursor-pointer"
-    : "bg-[#564787] font-medium text-white rounded-[10px] items-center hover:bg-[#564787] hover:cursor-pointer";
+    : "bg-[#564787] font-medium text-white rounded-[10px] items-center hover:bg-[#564787E5] hover:cursor-pointer";
   const svgFill = isWhiteBg ? "#564787" : "white";
   const textClass = isWhiteBg ? "text-[#564787]" : "text-white";
 
   return (
     <div className="text-center">
-      <Button className={buttonClass} size="lg">
+      <Button className={buttonClass} size="lg" onClick={onClick}>
         {icon ? icon : (
           <svg
             width="18"

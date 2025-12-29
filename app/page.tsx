@@ -6,7 +6,7 @@ export default function Home() {
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center">
-        <Header />
+        <Header id="042" incident="Latency spike"/>
       </div>
     </div>
   );
