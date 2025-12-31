@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Manrope, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+
 
 const manrope = Manrope({
   variable: "--font-sans", // Changed to default sans variable
@@ -19,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Postmorter",
+  title: "Postmortor",
   description: "A AI application for analysis of outages",
 };
 
@@ -32,7 +34,8 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${manrope.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   );

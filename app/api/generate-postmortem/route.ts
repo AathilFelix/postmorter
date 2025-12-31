@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-// import { LLMLog } from "@/lib/logSchema"; // Keep this if you have the interface defined
+import { LLMLog } from "@/lib/logSchema";
 
 export async function POST() {
   const start = Date.now();
 
   // 1. DEFINE MISSING VARIABLES (Mock Data for Simulation)
-  const model_name = "gemini-2105-flas-liteh";
+  const model_name = "gemini-2.5-flash-lite";
   const messages = [{ role: "user", content: "This is a test trigger for Datadog." }];
   const aiText = "This is a simulated AI response.";
   const usage = { prompt: 120, completion: 80, total: 200 };
