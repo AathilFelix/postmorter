@@ -1,6 +1,14 @@
+"use client";
+
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 import GenerateButton from "@/components/ui/GenerateButton";
+
+async function generate() {
+  await fetch("/api/generate-postmortem", {
+    method: "POST",
+  });
+}
 
 export default function Home() {
   return (
