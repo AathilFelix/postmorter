@@ -1,6 +1,8 @@
 import React from "react";
 import GenerateTable from "@/components/ui/GenerateTable";
 import Navbar from "@/components/Navbar";
+import { getAllReports } from "@/lib/store";
+import Link from "next/link"; // Import Link
 
 const incidenthistory = [
   {
@@ -40,18 +42,33 @@ const incidenthistory = [
 ];
 
 const HistoryPage = () => {
-  const hasIncidents = incidenthistory.length > 0;
+  const reports = getAllReports();
+  const hasIncidents = reports.length > 0;
+
+  const tableData = reports.map((r) => ({
+    // When clicking the ID, go to /report?id=...
+    id: (
+      <Link
+        href={`/report?id=${r.id}`}
+        className="text-[#564787] font-bold hover:underline">
+        Inc {r.id}
+      </Link>
+    ),
+    summary: r.report.incident_summary,
+    status: r.status,
+    date: r.date,
+  }));
 
   return (
     <main>
-      <Navbar showBreadcrumb={false}/>
+      <Navbar showBreadcrumb={false} />
       <section className="min-h-screen max-w-266 mx-auto flex flex-col gap-10 mt-23.5">
         <div className="text-center">
           <h1 className="text-[36px] font-bold">Incident History</h1>
           <p>A record of generated postmortems of past incidents</p>
         </div>
         {hasIncidents ? (
-          <GenerateTable incidents={incidenthistory} />
+          <GenerateTable incidents={tableData} />
         ) : (
           <div className="flex flex-col items-center justify-center mt-[300px] text-center">
             <p className="text-lg font-medium mb-2">
