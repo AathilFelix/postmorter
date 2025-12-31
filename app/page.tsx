@@ -17,7 +17,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-1.25">
           <GenerateButton
-            text="View generated postmortem"
+            text="Simulate Incident"
             variant="string"
             icon
           />
