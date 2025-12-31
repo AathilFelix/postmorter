@@ -10,8 +10,12 @@ import {
 
 import { Dot } from "lucide-react";
 
+interface NavbarProps {
+  showBreadcrumb ?: boolean;
+}
 
-const Navbar = () => {
+
+const Navbar = ({ showBreadcrumb = true }: NavbarProps) => {
   return (
     <nav className="w-full border-b border-slate-400 px-2 sm:px-2 lg:px-4 py-2 lg:py-4">
       <div className="flex items-center justify-between">
@@ -56,20 +60,23 @@ const Navbar = () => {
             <span className="text-lg lg:text-[16px] font-medium text-black">
               Postmortor
             </span>
-            
-            <Breadcrumb>
+            {showBreadcrumb && (
+              <Breadcrumb>
                 <BreadcrumbList>
-                <BreadcrumbSeparator className="flex items-center justify-center"><Dot size={24} strokeWidth={8} className="text-black"/></BreadcrumbSeparator>
-                <BreadcrumbItem>
-                    <BreadcrumbPage className="text-lg lg:text-[16px] font-medium text-black">Inc 042</BreadcrumbPage>
-                </BreadcrumbItem>
+                  <BreadcrumbSeparator className="flex items-center justify-center">
+                    <Dot size={24} strokeWidth={8} className="text-black" />
+                  </BreadcrumbSeparator>
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="text-lg lg:text-[16px] font-medium text-black">
+                      Inc 042
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
                 </BreadcrumbList>
-            </Breadcrumb>
-
+              </Breadcrumb>
+            )}
           </div>
 
           {/* Breadcrumb Arrow */}
-
         </div>
 
         {/* User Avatar */}
