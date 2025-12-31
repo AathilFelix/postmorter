@@ -1,19 +1,23 @@
 from fastapi import APIRouter
-from backend.services.postmortem_service import generate_postmortem
-from backend.utils.logger import log_event
+from typing import Dict
 
 router = APIRouter()
 
 @router.post("/generate-postmortem")
-async def generate(request: dict):
-    result = await generate_postmortem(request)
-
-    log_event({
-        "incident_id": request.get("incident_id"),
-        "mode": result["mode"],
-        "latency_ms": request.get("latency_ms"),
-        "token_usage": request.get("token_usage"),
-        "error": request.get("error")
-    })
-
-    return result
+def generate_postmortem(incident: Dict):
+    return {
+        "mode": "simulated",
+        "postmortem": {
+            "summary": "Simulated postmortem generated from incident data.",
+            "impact": "Latency and error rates were elevated.",
+            "timeline": [
+                {
+                    "timestamp": e["timestamp"],
+                    "event": e["message"]
+                }
+                for e in incident.get("events", [])
+            ],
+            "root_cause": "Root cause could not be definitively determined.",
+            "action_items": []
+        }
+    }

@@ -1,10 +1,7 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from fastapi import FastAPI
-from backend.routes.generate_postmortem import router
+from routes.generate_postmortem import router
 
-app = FastAPI(title="LLM Postmortem API")
+app = FastAPI()
 
 app.include_router(router)
 
