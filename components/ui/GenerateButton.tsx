@@ -45,6 +45,6 @@ const GenerateButton = ({variant, icon, text, onClick}: ButtonType)  => {
       </Button>
     </div>
   );
-}
+};
 
-export default GenerateButton
+export default GenerateButton;

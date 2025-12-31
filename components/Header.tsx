@@ -1,3 +1,5 @@
+
+"use client";
 import React from 'react'
 import KpiGrid from "@/components/ui/kpigrid";
 import GenerateButton from '@/components/ui/GenerateButton'
@@ -34,6 +36,9 @@ const kpiData = [
     badgeType: "text" as const,
   },
 ];
+type Props = {
+  onGenerate: () => void;
+};
 
 interface HeaderProps {
   id: string;
@@ -99,4 +104,4 @@ const Header = ({ id, incident }: HeaderProps) => {
   );
 }
 
-export default Header
+export default Header;
