@@ -12,10 +12,11 @@ import { Dot } from "lucide-react";
 
 interface NavbarProps {
   showBreadcrumb ?: boolean;
+  id?: string;
 }
 
 
-const Navbar = ({ showBreadcrumb = true }: NavbarProps) => {
+const Navbar = ({ showBreadcrumb = true, id }: NavbarProps) => {
   return (
     <nav className="w-full border-b border-slate-400 px-2 sm:px-2 lg:px-4 py-2 lg:py-4">
       <div className="flex items-center justify-between">
@@ -68,7 +69,7 @@ const Navbar = ({ showBreadcrumb = true }: NavbarProps) => {
                   </BreadcrumbSeparator>
                   <BreadcrumbItem>
                     <BreadcrumbPage className="text-lg lg:text-[16px] font-medium text-black">
-                      Inc 042
+                      Inc {id}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>

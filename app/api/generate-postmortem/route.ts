@@ -1,73 +1,112 @@
 import { NextResponse } from "next/server";
-import { LLMLog } from "@/lib/logSchema";
+import { google } from "@ai-sdk/google"; // 👈 1. Import Google Provider
+import { generateObject } from "ai";
+import { z } from "zod";
+import { saveOrUpdateReport } from "@/lib/store";
+
+// ✅ 1. Define the Schema (Matches your frontend props)
+const PostmortemSchema = z.object({
+  incident_head: z.string().describe("Short heading of the incident"),
+  severity: z.enum(["SEV-1", "SEV-2", "SEV-3"]),
+  incident_summary: z.string().describe("What happened and when."),
+  impact: z.object({
+    affected_services: z.array(z.string()),
+    user_impact: z.string().describe("User-facing impact description."),
+    duration: z.string().describe("Time from start to resolution."),
+  }),
+  timeline: z.array(
+    z.object({
+      time: z.string().describe("HH:MM 24hr format"),
+      event: z.string().describe("One sentence description"),
+    })
+  ),
+  root_cause: z.string().describe("Best-effort inference of the cause."),
+  action_items: z.array(
+    z.object({
+      heading: z.string().describe("4-5 word heading"),
+      description: z.string().describe("2 sentences describing the item"),
+      team: z.enum(["backend", "sre", "platform"]),
+      priority: z.enum(["High", "Medium", "Low"]),
+    })
+  ),
+});
 
 export async function POST() {
-  const start = Date.now();
+  console.log("🚀 Simulation Triggered: Hybrid Mode");
 
-  // 1. DEFINE MISSING VARIABLES (Mock Data for Simulation)
-  const model_name = "gemini-2.5-flash-lite";
-  const messages = [{ role: "user", content: "This is a test trigger for Datadog." }];
-  const aiText = "This is a simulated AI response.";
-  const usage = { prompt: 120, completion: 80, total: 200 };
+  // --- 2. GENERATE "JUICY" LOGS (For Datadog & Local Context) ---
+  const logs = [];
+  const now = Date.now();
 
-  // simulate work (latency)
-  await new Promise((r) => setTimeout(r, 1200));
-
-  // 2. CALCULATE DURATION
-  const duration = Date.now() - start;
-
-  const log = {
-    service: "llm-postmortem-app",
-    env: "hackathon",
-    request_id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
-
-    // Metrics (Now these variables exist)
-    latency_ms: duration,
-    tokens_prompt: usage.prompt,
-    tokens_completion: usage.completion,
-    tokens_total: usage.total,
-
-    // Context for Postmortem
-    model_name: model_name,
-    user_prompt_snapshot: messages?.[messages.length - 1]?.content || "No message found",
-    ai_response_snapshot: aiText,
-
-    status: "success",
-    is_error: false,
-
-    
-    token_usage: 950,
-   
-    error: false,
-    mode: "simulated"
-
-  };
-
-  console.log("API key length:", process.env.DATADOG_API_KEY?.length);
-
-  // 👉 SEND TO DATADOG (US5)
-  const ddRes = await fetch(
-    "https://http-intake.logs.us5.datadoghq.com/api/v2/logs",
+  const errorScenarios = [
     {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "DD-API-KEY": process.env.DATADOG_API_KEY!,
-      },
-      body: JSON.stringify([
-        {
-          ...log,
-          // Optional: Add specific tags for easier filtering in Datadog
-          ddsource: "nextjs", 
-          ddtags: "env:hackathon,team:ai-hackathon"
-        },
-      ]),
-    }
-  );
+      msg: "Timeout waiting for connection from pool",
+      type: "DB_POOL_EXHAUSTED",
+    },
+    {
+      msg: "Transaction 4921 rolled back due to deadlock",
+      type: "DB_DEADLOCK",
+    },
+    { msg: "upstream request timeout", type: "HTTP_504" },
+  ];
 
-  // We await text() to see the error message if it fails
-  console.log("Datadog status:", ddRes.status, await ddRes.text());
+  for (let i = 0; i < 30; i++) {
+    const timeOffset = i * 10000;
+    const historicDate = new Date(now - timeOffset).toISOString();
+    const error =
+      errorScenarios[Math.floor(Math.random() * errorScenarios.length)];
 
-  return NextResponse.json({ ok: true });
+    logs.push({
+      service: "ai-postmortem-app",
+      env: "hackathon",
+      timestamp: historicDate,
+      duration_ms: 15200 + Math.random() * 2000,
+      model: "gemini-2.5-flash-lite",
+      status: "error",
+      ddsource: "nextjs",
+      message: `[Error] ${error.msg}`,
+      error: { kind: error.type },
+    });
+  }
+
+  // A. Send to Datadog (Background - Fire & Forget)
+  fetch("https://http-intake.logs.us5.datadoghq.com/api/v2/logs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "DD-API-KEY": process.env.DATADOG_API_KEY!,
+    },
+    body: JSON.stringify(logs),
+  }).catch((e) => console.error("Datadog Upload Failed (Non-critical):", e));
+
+  // B. Generate Report IMMEDIATELY (Foreground)
+  try {
+    const { object: postmortemReport } = await generateObject({
+      // 👇 2. Change Model to Google Gemini
+      model: google("gemini-2.0-flash"),
+      schema: PostmortemSchema,
+      prompt: `
+        You are an SRE. Generate a Postmortem based on these logs.
+        
+        DATA:
+        - Incident: High Latency / Database Errors
+        - Time: ${new Date().toISOString()}
+        - Logs: ${JSON.stringify(logs).slice(0, 10000)}
+
+        GUIDELINES:
+        1. Root Cause: Cite specific errors like "DB_POOL_EXHAUSTED" from the logs.
+        2. Action Items: Assign to 'backend', 'sre', or 'platform'.
+        3. Be concise and professional.
+      `,
+    });
+
+    // Save as PRELIMINARY (true)
+    saveOrUpdateReport(postmortemReport, true);
+
+    console.log("✅ Immediate Report Generated");
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("❌ AI Generation Failed:", error);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
 }

@@ -10,7 +10,7 @@ import {
 import { Badge } from "./badge";
 
 interface GenerateTableProps {
-  id: string;
+  id: React.ReactNode;
   summary: string;
   status: string;
   date: string;

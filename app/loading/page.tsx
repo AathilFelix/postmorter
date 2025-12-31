@@ -2,17 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import { useRouter } from "next/navigation";
+
+async function checkStatus() {
+  return new Promise((resolve) => setTimeout(resolve, 12000));
+}
 
 const LoadingPage = () => {
-
+  const router = useRouter();
   const [dots, setDots] = useState("");
   useEffect(() => {
     const interval = setInterval(() => {
       setDots((prev) => (prev.length === 3 ? "" : prev + "."));
     }, 500);
 
-    return () => clearInterval(interval);
-  }, []);
+    const timer = setTimeout(() => {
+      router.push("/report");
+    }, 12000); // Wait 12 seconds for AI to finish
+
+    return () => { 
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
+  }, [router]);
 
 
   return (

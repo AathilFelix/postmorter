@@ -4,6 +4,22 @@ import TimeLine from '@/components/ui/TimeLine';
 import ActionItem from '@/components/ui/ActionItem';
 import HeadsUp from '@/components/ui/HeadsUp';
 
+interface IncidentBodyProps {
+  summary: string;
+  impact: { label: string; description: string }[];
+  timeline: { time: string; text: string }[]; // Changed 'event' to 'text' to match your UI
+  rootCause: string;
+  actionItems: {
+    heading: string;
+    content: string;
+    team: string;
+    priority: string;
+  }[];
+
+  // Keep your existing loading flags if needed
+  isNoObservability?: boolean;
+  isAIUnavailable?: boolean;
+}
 
 const impactItems = [
   {
@@ -92,19 +108,16 @@ const ActionItems = [
   },
 ];
 
-interface IncidentBodyProps {
-  isNoObservability ?: boolean;
-  isAIUnavailable ?: boolean;
-  isBothUnavailable ?: boolean;
-}
-
 
 const IncidentBody = ({
+  summary,
+  impact,
+  timeline,
+  rootCause,
+  actionItems,
   isNoObservability,
   isAIUnavailable,
-  isBothUnavailable,
 }: IncidentBodyProps) => {
-
   const bothUnavailable = isNoObservability && isAIUnavailable;
 
   return (
@@ -141,7 +154,7 @@ const IncidentBody = ({
                 ? "Incident summary could not be generated."
                 : isAIUnavailable
                 ? "Incident summary could not be generated."
-                : "At approximately 14:00 UTC, the primary inference platform experienced a significant latency spike, with P99 latency increasing by over 300%. This resulted in degraded performance and timeout errors for a portion of production traffic, particularly affecting real-time requests in the Asia-Pacific region. The incident occurred during a scheduled configuration change and was resolved after rollback actions restored normal system behaviour."
+                : summary
             }
             variant="default"
           />
@@ -164,7 +177,7 @@ const IncidentBody = ({
             />
             {!(bothUnavailable || isAIUnavailable) && (
               <ul className="list-disc space-y-3 pl-6 text-justify">
-                {impactItems.map((item) => (
+                {impact.map((item) => (
                   <li key={item.label}>
                     <span className="font-bold">{item.label}:</span>{" "}
                     {item.description}
@@ -194,11 +207,11 @@ const IncidentBody = ({
             />
             {!(bothUnavailable || isAIUnavailable) && (
               <div>
-                {TimelineItems.map((timeline) => (
+                {timeline.map((t, idx) => (
                   <TimeLine
-                    key={timeline.time}
-                    time={timeline.time}
-                    text={timeline.text}
+                    key={idx}
+                    time={t.time}
+                    text={t.text}
                   />
                 ))}
               </div>
@@ -214,7 +227,7 @@ const IncidentBody = ({
                   ? "Root cause analysis could not be generated. No inferred analysis was produced."
                   : isAIUnavailable
                   ? "Root cause analysis could not be generated due to AI unavailability. No inferred analysis was produced."
-                  : "Based on available logs and configuration data, the incident was likely triggered by a misconfiguration introduced during the v2 service mesh deployment. An EnvoyFilter change intended to add tracing headers appears to have interfered with keep-alive connections to the backend pool, increasing connection overhead and contributing to elevated request latency under load."
+                  : rootCause
               }
             />
           </section>
@@ -232,9 +245,9 @@ const IncidentBody = ({
                 inferred analysis was produced.
               </div>
             ) : (
-              ActionItems.map((action) => (
+              actionItems.map((action, idx) => (
                 <ActionItem
-                  key={action.heading}
+                  key={idx}
                   heading={action.heading}
                   priority={action.priority}
                   content={action.content}
