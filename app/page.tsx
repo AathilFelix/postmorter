@@ -5,17 +5,6 @@ import Navbar from "@/components/Navbar";
 import GenerateButton from "@/components/ui/GenerateButton";
 import { useRouter } from "next/navigation";
 
-async function generate() {
-  try {
-    const res = await fetch("/api/generate-postmortem", {
-      method: "POST",
-    });
-    if (!res.ok) throw new Error("Simulation failed");
-    console.log("Simulation triggered!");
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 async function generate() {
   await fetch("/api/generate-postmortem", {
